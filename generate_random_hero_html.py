@@ -207,6 +207,19 @@ CHAMPION_TITLES = {
 }
 
 
+def build_champion_label(name: str, title: str) -> str:
+    name = (name or "").strip()
+    title = (title or "").strip()
+
+    if name and title and name != title:
+        return f"{name}·{title}"
+    if name:
+        return name
+    if title:
+        return title
+    return ""
+
+
 def normalize_champion_id(value: str) -> str:
     value = value.strip()
     value = value.replace("'", "")
@@ -271,6 +284,72 @@ def extract_opgg_game_version(html: str) -> str:
     return ""
 
 
+def extract_json_object_text(raw_text: str, object_open_index: int) -> str:
+    depth = 0
+    end_index = -1
+
+    for idx in range(object_open_index, len(raw_text)):
+        ch = raw_text[idx]
+        if ch == "{":
+            depth += 1
+        elif ch == "}":
+            depth -= 1
+            if depth == 0:
+                end_index = idx
+                break
+
+    if end_index < 0:
+        return ""
+
+    return raw_text[object_open_index : end_index + 1]
+
+
+@lru_cache(maxsize=1)
+def fetch_opgg_champion_titles():
+    url = OPGG_CN_URLS["top"]
+    headers = {
+        "User-Agent": (
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+            "AppleWebKit/537.36 (KHTML, like Gecko) "
+            "Chrome/124.0 Safari/537.36"
+        ),
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8",
+        "Referer": "https://opgg.cn/champions",
+    }
+
+    try:
+        response = requests.get(url, headers=headers, timeout=25)
+        response.raise_for_status()
+        response.encoding = "utf-8"
+        html = response.text
+
+        marker = '\\"championMap\\":{'
+        marker_index = html.find(marker)
+        if marker_index < 0:
+            return {}
+
+        object_open_index = marker_index + len(marker) - 1
+        champion_map_text = extract_json_object_text(html, object_open_index)
+        if not champion_map_text:
+            return {}
+
+        champion_map = json.loads(champion_map_text.replace('\\"', '"'))
+
+        result = {}
+        for champion in champion_map.values():
+            champion_id = (champion.get("key") or "").strip()
+            label = build_champion_label(
+                champion.get("name", ""), champion.get("title", "")
+            )
+            if champion_id and label:
+                result[champion_id] = label
+
+        return result
+    except Exception:
+        return {}
+
+
 @lru_cache(maxsize=1)
 def get_ddragon_champion_key_map():
     headers = {
@@ -308,7 +387,7 @@ def get_ddragon_champion_key_map():
     return {}
 
 
-def fetch_opgg_cn_lane_champions(lane_key: str):
+def fetch_opgg_cn_lane_champions(lane_key: str, valid_ids):
     url = OPGG_CN_URLS[lane_key]
 
     headers = {
@@ -331,7 +410,6 @@ def fetch_opgg_cn_lane_champions(lane_key: str):
     soup = BeautifulSoup(html, "html.parser")
     game_version = extract_opgg_game_version(html)
 
-    valid_ids = set(CHAMPION_TITLES.keys())
     found = []
 
     # 优先使用页面内按分路返回的结构化数据，避免误扫到整页预加载资源。
@@ -361,13 +439,16 @@ def fetch_opgg_cn_lane_champions(lane_key: str):
     return found, game_version
 
 
-def fetch_all_opgg_cn_data():
+def fetch_all_opgg_cn_data(champion_titles):
     lane_to_champions = {}
     game_version = ""
+    valid_ids = set(champion_titles.keys())
 
     for lane_key in ["top", "jungle", "mid", "adc", "support"]:
         try:
-            champions, lane_version = fetch_opgg_cn_lane_champions(lane_key)
+            champions, lane_version = fetch_opgg_cn_lane_champions(
+                lane_key, valid_ids
+            )
             lane_to_champions[lane_key] = champions
             if not game_version and lane_version:
                 game_version = lane_version
@@ -378,8 +459,7 @@ def fetch_all_opgg_cn_data():
 
     return lane_to_champions, game_version
 
-
-def build_hero_lane_config(lane_to_champions):
+def build_hero_lane_config(lane_to_champions, champion_titles):
     hero_to_lanes = {}
 
     for lane_key, champion_ids in lane_to_champions.items():
@@ -389,7 +469,7 @@ def build_hero_lane_config(lane_to_champions):
 
     lines = []
 
-    for champion_id, title in CHAMPION_TITLES.items():
+    for champion_id, title in champion_titles.items():
         lane_names = hero_to_lanes.get(champion_id)
         if lane_names:
             lines.append(f"{title}：{'，'.join(lane_names)}")
@@ -397,8 +477,8 @@ def build_hero_lane_config(lane_to_champions):
     return "\n".join(lines)
 
 
-def build_html(hero_lane_config, game_version):
-    champion_titles_js = json.dumps(CHAMPION_TITLES, ensure_ascii=False, indent=6)
+def build_html(hero_lane_config, game_version, champion_titles):
+    champion_titles_js = json.dumps(champion_titles, ensure_ascii=False, indent=6)
 
     return f"""<!doctype html>
 <html lang="zh-CN">
@@ -521,7 +601,16 @@ def build_html(hero_lane_config, game_version):
     const pools = buildPoolsFromList(document.getElementById("heroLaneConfig").textContent.trim());
 
     const $ = id => document.getElementById(id);
-    const safeTitle = id => championTitles[id] || id;
+    const safeTitle = id => championTitles[id] || "未收录英雄";
+
+    function splitChampionDisplay(id) {{
+      const label = safeTitle(id);
+      if (label.includes("·")) {{
+        const [heroTitle, heroName] = label.split("·", 2);
+        return {{ heroTitle, heroName }};
+      }}
+      return {{ heroTitle: label, heroName: label }};
+    }}
 
     function iconUrl(id) {{ return `https://game.gtimg.cn/images/lol/act/img/champion/${{id}}.png`; }}
     function fallbackIconUrl(id) {{ return `https://ddragon.leagueoflegends.com/cdn/${{VERSION}}/img/champion/${{id}}.png`; }}
@@ -544,15 +633,15 @@ def build_html(hero_lane_config, game_version):
     }}
 
     function card(id) {{
-      const title = safeTitle(id);
+      const {{ heroTitle, heroName }} = splitChampionDisplay(id);
       return `
         <div class="hero-card group flex items-center gap-3 rounded-2xl bg-slate-950/65 border border-white/10 p-2.5 overflow-hidden">
           <div class="relative shrink-0">
-            <img src="${{iconUrl(id)}}" alt="${{title}}" class="w-14 h-14 rounded-2xl object-cover border border-amber-200/20 shadow-lg shadow-black/30" loading="lazy" onerror="if (!this.dataset.fallback) {{ this.dataset.fallback='1'; this.src='${{fallbackIconUrl(id)}}'; }} else {{ this.onerror=null; this.src='${{secondFallbackIconUrl(id)}}'; }}" />
+            <img src="${{iconUrl(id)}}" alt="${{heroName}}" class="w-14 h-14 rounded-2xl object-cover border border-amber-200/20 shadow-lg shadow-black/30" loading="lazy" onerror="if (!this.dataset.fallback) {{ this.dataset.fallback='1'; this.src='${{fallbackIconUrl(id)}}'; }} else {{ this.onerror=null; this.src='${{secondFallbackIconUrl(id)}}'; }}" />
           </div>
           <div class="min-w-0 flex-1">
-            <div class="font-black text-sm md:text-base truncate text-slate-50 group-hover:text-amber-100 transition">${{title}}</div>
-            <div class="text-xs text-slate-500 truncate">${{id}}</div>
+            <div class="font-black text-sm md:text-base truncate text-slate-50 group-hover:text-amber-100 transition">${{heroTitle}}</div>
+            <div class="text-xs text-slate-300/85 truncate">${{heroName}}</div>
           </div>
         </div>`;
     }}
@@ -609,14 +698,16 @@ def build_html(hero_lane_config, game_version):
 
 
 def main():
-    lane_to_champions, game_version = fetch_all_opgg_cn_data()
-    hero_lane_config = build_hero_lane_config(lane_to_champions)
+    champion_titles = fetch_opgg_champion_titles() or CHAMPION_TITLES
+
+    lane_to_champions, game_version = fetch_all_opgg_cn_data(champion_titles)
+    hero_lane_config = build_hero_lane_config(lane_to_champions, champion_titles)
 
     if not hero_lane_config.strip():
         raise RuntimeError("没有抓取到任何英雄数据，请检查 opgg.cn 页面结构或网络访问。")
 
     Path(OUTPUT_HTML).write_text(
-        build_html(hero_lane_config, game_version), encoding="utf-8"
+        build_html(hero_lane_config, game_version, champion_titles), encoding="utf-8"
     )
 
     print()
