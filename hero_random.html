@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>英雄联盟英雄随机器</title>
+  <title>英雄联盟5V5英雄随机器</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     body {
@@ -48,10 +48,10 @@
     <header class="mb-7 text-center relative">
       <div class="inline-flex items-center gap-2 rounded-full border border-amber-300/25 bg-amber-300/10 px-4 py-1.5 text-xs text-amber-100 shadow-lg shadow-amber-950/20">
         <span class="h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_14px_rgba(52,211,153,.9)]"></span>
-        单 HTML · 国内头像源 · 双方英雄不重复
+        单 HTML · 国内头像源 · 双方英雄不重复 · 使用英雄称号
       </div>
-      <h1 class="mt-4 text-4xl md:text-6xl font-black tracking-tight gold-text">英雄联盟英雄随机器</h1>
-      <p class="mt-3 text-slate-300">按分路随机英雄，蓝色方与红色方不会出现相同英雄。</p>
+      <h1 class="mt-4 text-4xl md:text-6xl font-black tracking-tight gold-text">英雄联盟英雄称号随机器</h1>
+      <p class="mt-3 text-slate-300">按分路随机英雄，卡片优先展示英雄称号，蓝色方与红色方不会出现相同英雄。</p>
       <p class="mt-2 text-xs text-slate-500 max-w-3xl mx-auto leading-relaxed">
         英雄池为内置近似 OPGG 全球分路常见英雄池；头像优先使用腾讯 LOL 国内资源，加载失败时自动切换 Riot Data Dragon 备用源。
       </p>
@@ -110,13 +110,14 @@
     </main>
 
     <footer class="mt-7 text-center text-xs text-slate-500">
-      页面数据为静态内置英雄池；如需更新英雄池，可直接修改 HTML 中的 pools 数据。
+      页面数据为静态内置英雄池；如需更新英雄池，可直接修改 HTML 中的 pools 与 championTitles 数据。
     </footer>
   </div>
 
   <script>
     const VERSION = "14.24.1";
     const FALLBACK_VERSION = "14.23.1";
+
     const lanes = [
       { key: "top", name: "上路", icon: "TOP" },
       { key: "jungle", name: "打野", icon: "JUG" },
@@ -125,8 +126,8 @@
       { key: "support", name: "辅助", icon: "SUP" }
     ];
 
-    const championNames = {
-      Aatrox:"亚托克斯", Ahri:"阿狸", Akali:"阿卡丽", Akshan:"阿克尚", Alistar:"阿利斯塔", Ambessa:"安蓓萨", Amumu:"阿木木", Anivia:"艾尼维亚", Annie:"安妮", Aphelios:"厄斐琉斯", Ashe:"艾希", AurelionSol:"奥瑞利安·索尔", Aurora:"阿萝拉", Azir:"阿兹尔", Bard:"巴德", Belveth:"卑尔维斯", Blitzcrank:"布里茨", Brand:"布兰德", Braum:"布隆", Briar:"贝蕾亚", Caitlyn:"凯特琳", Camille:"卡蜜尔", Cassiopeia:"卡西奥佩娅", Chogath:"科加斯", Corki:"库奇", Darius:"德莱厄斯", Diana:"黛安娜", Draven:"德莱文", DrMundo:"蒙多医生", Ekko:"艾克", Elise:"伊莉丝", Evelynn:"伊芙琳", Ezreal:"伊泽瑞尔", Fiddlesticks:"费德提克", Fiora:"菲奥娜", Fizz:"菲兹", Galio:"加里奥", Gangplank:"普朗克", Garen:"盖伦", Gnar:"纳尔", Gragas:"古拉加斯", Graves:"格雷福斯", Gwen:"格温", Hecarim:"赫卡里姆", Heimerdinger:"黑默丁格", Hwei:"彗", Illaoi:"俄洛伊", Irelia:"艾瑞莉娅", Ivern:"艾翁", Janna:"迦娜", JarvanIV:"嘉文四世", Jax:"贾克斯", Jayce:"杰斯", Jhin:"烬", Jinx:"金克丝", Kaisa:"卡莎", Kalista:"卡莉丝塔", Karma:"卡尔玛", Karthus:"卡尔萨斯", Kassadin:"卡萨丁", Katarina:"卡特琳娜", Kayle:"凯尔", Kayn:"凯隐", Kennen:"凯南", Khazix:"卡兹克", Kindred:"千珏", Kled:"克烈", KogMaw:"克格莫", KSante:"奎桑提", Leblanc:"乐芙兰", LeeSin:"李青", Leona:"蕾欧娜", Lillia:"莉莉娅", Lissandra:"丽桑卓", Lucian:"卢锡安", Lulu:"璐璐", Lux:"拉克丝", Malphite:"墨菲特", Malzahar:"玛尔扎哈", Maokai:"茂凯", MasterYi:"易", Milio:"米利欧", MissFortune:"厄运小姐", MonkeyKing:"孙悟空", Mordekaiser:"莫德凯撒", Morgana:"莫甘娜", Naafiri:"纳亚菲利", Nami:"娜美", Nasus:"内瑟斯", Nautilus:"诺提勒斯", Neeko:"妮蔻", Nidalee:"奈德丽", Nilah:"尼菈", Nocturne:"魔腾", Nunu:"努努和威朗普", Olaf:"奥拉夫", Orianna:"奥莉安娜", Ornn:"奥恩", Pantheon:"潘森", Poppy:"波比", Pyke:"派克", Qiyana:"奇亚娜", Quinn:"奎因", Rakan:"洛", Rammus:"拉莫斯", RekSai:"雷克塞", Rell:"芮尔", Renata:"烈娜塔", Renekton:"雷克顿", Rengar:"雷恩加尔", Riven:"锐雯", Rumble:"兰博", Ryze:"瑞兹", Samira:"莎弥拉", Sejuani:"瑟庄妮", Senna:"赛娜", Seraphine:"萨勒芬妮", Sett:"瑟提", Shaco:"萨科", Shen:"慎", Shyvana:"希瓦娜", Singed:"辛吉德", Sion:"赛恩", Sivir:"希维尔", Skarner:"斯卡纳", Smolder:"斯莫德", Sona:"娑娜", Soraka:"索拉卡", Swain:"斯维因", Sylas:"塞拉斯", Syndra:"辛德拉", TahmKench:"塔姆", Taliyah:"塔莉垭", Talon:"泰隆", Taric:"塔里克", Teemo:"提莫", Thresh:"锤石", Tristana:"崔丝塔娜", Trundle:"特朗德尔", Tryndamere:"泰达米尔", TwistedFate:"崔斯特", Twitch:"图奇", Udyr:"乌迪尔", Urgot:"厄加特", Varus:"韦鲁斯", Vayne:"薇恩", Veigar:"维迦", Velkoz:"维克兹", Vex:"薇古丝", Vi:"蔚", Viego:"佛耶戈", Viktor:"维克托", Vladimir:"弗拉基米尔", Volibear:"沃利贝尔", Warwick:"沃里克", Xayah:"霞", Xerath:"泽拉斯", XinZhao:"赵信", Yasuo:"亚索", Yone:"永恩", Yorick:"约里克", Yuumi:"悠米", Zac:"扎克", Zed:"劫", Zeri:"泽丽", Ziggs:"吉格斯", Zilean:"基兰", Zoe:"佐伊", Zyra:"婕拉"
+    const championTitles = {
+      Aatrox: "暗裔剑魔", Ahri: "九尾妖狐", Akali: "离群之刺", Akshan: "影哨", Alistar: "牛头酋长", Ambessa: "铁血狼母", Amumu: "殇之木乃伊", Anivia: "冰晶凤凰", Annie: "黑暗之女", Aphelios: "残月之肃", Ashe: "寒冰射手", AurelionSol: "铸星龙王", Aurora: "双界灵兔", Azir: "沙漠皇帝", Bard: "星界游神", Belveth: "虚空女皇", Blitzcrank: "蒸汽机器人", Brand: "复仇焰魂", Braum: "弗雷尔卓德之心", Briar: "狂厄蔷薇", Caitlyn: "皮城女警", Camille: "青钢影", Cassiopeia: "魔蛇之拥", Chogath: "虚空恐惧", Corki: "英勇投弹手", Darius: "诺克萨斯之手", Diana: "皎月女神", Draven: "荣耀行刑官", DrMundo: "祖安狂人", Ekko: "时间刺客", Elise: "蜘蛛女皇", Evelynn: "痛苦之拥", Ezreal: "探险家", Fiddlesticks: "远古恐惧", Fiora: "无双剑姬", Fizz: "潮汐海灵", Galio: "正义巨像", Gangplank: "海洋之灾", Garen: "德玛西亚之力", Gnar: "迷失之牙", Gragas: "酒桶", Graves: "法外狂徒", Gwen: "灵罗娃娃", Hecarim: "战争之影", Heimerdinger: "大发明家", Hwei: "异画师", Illaoi: "海兽祭司", Irelia: "刀锋舞者", Ivern: "翠神", Janna: "风暴之怒", JarvanIV: "德玛西亚皇子", Jax: "武器大师", Jayce: "未来守护者", Jhin: "戏命师", Jinx: "暴走萝莉", Kaisa: "虚空之女", Kalista: "复仇之矛", Karma: "天启者", Karthus: "死亡颂唱者", Kassadin: "虚空行者", Katarina: "不祥之刃", Kayle: "正义天使", Kayn: "影流之镰", Kennen: "狂暴之心", Khazix: "虚空掠夺者", Kindred: "永猎双子", Kled: "暴怒骑士", KogMaw: "深渊巨口", KSante: "纳祖芒荣耀", Leblanc: "诡术妖姬", LeeSin: "盲僧", Leona: "曙光女神", Lillia: "含羞蓓蕾", Lissandra: "冰霜女巫", Lucian: "圣枪游侠", Lulu: "仙灵女巫", Lux: "光辉女郎", Malphite: "熔岩巨兽", Malzahar: "虚空先知", Maokai: "扭曲树精", MasterYi: "无极剑圣", Milio: "明烛", MissFortune: "赏金猎人", MonkeyKing: "齐天大圣", Mordekaiser: "铁铠冥魂", Morgana: "堕落天使", Naafiri: "百裂冥犬", Nami: "唤潮鲛姬", Nasus: "沙漠死神", Nautilus: "深海泰坦", Neeko: "万花通灵", Nidalee: "狂野女猎手", Nilah: "不羁之悦", Nocturne: "永恒梦魇", Nunu: "雪原双子", Olaf: "狂战士", Orianna: "发条魔灵", Ornn: "山隐之焰", Pantheon: "不屈之枪", Poppy: "圣锤之毅", Pyke: "血港鬼影", Qiyana: "元素女皇", Quinn: "德玛西亚之翼", Rakan: "幻翎", Rammus: "披甲龙龟", RekSai: "虚空遁地兽", Rell: "镕铁少女", Renata: "炼金男爵", Renekton: "荒漠屠夫", Rengar: "傲之追猎者", Riven: "放逐之刃", Rumble: "机械公敌", Ryze: "符文法师", Samira: "沙漠玫瑰", Sejuani: "北地之怒", Senna: "涤魂圣枪", Seraphine: "星籁歌姬", Sett: "腕豪", Shaco: "恶魔小丑", Shen: "暮光之眼", Shyvana: "龙血武姬", Singed: "炼金术士", Sion: "亡灵战神", Sivir: "战争女神", Skarner: "远古巫灵", Smolder: "炽炎雏龙", Sona: "琴瑟仙女", Soraka: "众星之子", Swain: "诺克萨斯统领", Sylas: "解脱者", Syndra: "暗黑元首", TahmKench: "河流之王", Taliyah: "岩雀", Talon: "刀锋之影", Taric: "瓦洛兰之盾", Teemo: "迅捷斥候", Thresh: "魂锁典狱长", Tristana: "麦林炮手", Trundle: "巨魔之王", Tryndamere: "蛮族之王", TwistedFate: "卡牌大师", Twitch: "瘟疫之源", Udyr: "兽灵行者", Urgot: "无畏战车", Varus: "惩戒之箭", Vayne: "暗夜猎手", Veigar: "邪恶小法师", Velkoz: "虚空之眼", Vex: "愁云使者", Vi: "皮城执法官", Viego: "破败之王", Viktor: "机械先驱", Vladimir: "猩红收割者", Volibear: "不灭狂雷", Warwick: "祖安怒兽", Xayah: "逆羽", Xerath: "远古巫灵", XinZhao: "德邦总管", Yasuo: "疾风剑豪", Yone: "封魔剑魂", Yorick: "牧魂人", Yuumi: "魔法猫咪", Zac: "生化魔人", Zed: "影流之主", Zeri: "祖安花火", Ziggs: "爆破鬼才", Zilean: "时光守护者", Zoe: "暮光星灵", Zyra: "荆棘之兴"
     };
 
     const pools = {
@@ -136,6 +137,9 @@
       adc: ["Aphelios","Ashe","Caitlyn","Draven","Ezreal","Jhin","Jinx","Kaisa","Kalista","KogMaw","Lucian","MissFortune","Nilah","Samira","Senna","Seraphine","Sivir","Smolder","Tristana","Twitch","Varus","Vayne","Xayah","Yasuo","Zeri","Ziggs"],
       support: ["Alistar","Amumu","Bard","Blitzcrank","Brand","Braum","Janna","Karma","Leona","Lulu","Lux","Maokai","Milio","Morgana","Nami","Nautilus","Neeko","Pantheon","Poppy","Pyke","Rakan","Rell","Renata","Senna","Seraphine","Sona","Soraka","Swain","TahmKench","Taric","Thresh","Velkoz","Xerath","Yuumi","Zilean","Zyra"]
     };
+
+    const $ = id => document.getElementById(id);
+    const safeTitle = id => championTitles[id] || id;
 
     function iconUrl(id) {
       return `https://game.gtimg.cn/images/lol/act/img/champion/${id}.png`;
@@ -166,15 +170,15 @@
     }
 
     function card(id) {
-      const cn = championNames[id] || id;
+      const title = safeTitle(id);
       return `
         <div class="hero-card group flex items-center gap-3 rounded-2xl bg-slate-950/65 border border-white/10 p-2.5 overflow-hidden">
           <div class="relative shrink-0">
-            <img src="${iconUrl(id)}" alt="${cn}" class="w-14 h-14 rounded-2xl object-cover border border-amber-200/20 shadow-lg shadow-black/30" loading="lazy" onerror="if (!this.dataset.fallback) { this.dataset.fallback='1'; this.src='${fallbackIconUrl(id)}'; } else { this.onerror=null; this.src='${secondFallbackIconUrl(id)}'; }" />
+            <img src="${iconUrl(id)}" alt="${title}" class="w-14 h-14 rounded-2xl object-cover border border-amber-200/20 shadow-lg shadow-black/30" loading="lazy" onerror="if (!this.dataset.fallback) { this.dataset.fallback='1'; this.src='${fallbackIconUrl(id)}'; } else { this.onerror=null; this.src='${secondFallbackIconUrl(id)}'; }" />
             <div class="absolute -inset-0.5 rounded-2xl border border-white/10 pointer-events-none"></div>
           </div>
           <div class="min-w-0 flex-1">
-            <div class="font-black text-sm md:text-base truncate text-slate-50 group-hover:text-amber-100 transition">${cn}</div>
+            <div class="font-black text-sm md:text-base truncate text-slate-50 group-hover:text-amber-100 transition">${title}</div>
             <div class="text-xs text-slate-500 truncate">${id}</div>
           </div>
         </div>`;
@@ -194,8 +198,9 @@
     }
 
     function randomize() {
-      const n = Math.max(1, Math.min(20, Number(document.getElementById("count").value) || 3));
-      document.getElementById("count").value = n;
+      const n = Math.max(1, Math.min(20, Number($("count").value) || 3));
+      $("count").value = n;
+
       const used = new Set();
       const blue = {};
       const red = {};
@@ -203,25 +208,25 @@
       for (const lane of lanes) blue[lane.key] = pickUnique(pools[lane.key], n, used);
       for (const lane of lanes) red[lane.key] = pickUnique(pools[lane.key], n, used);
 
-      document.getElementById("blueTeam").innerHTML = lanes.map(l => laneBlock(l, blue[l.key])).join("");
-      document.getElementById("redTeam").innerHTML = lanes.map(l => laneBlock(l, red[l.key])).join("");
+      $("blueTeam").innerHTML = lanes.map(lane => laneBlock(lane, blue[lane.key])).join("");
+      $("redTeam").innerHTML = lanes.map(lane => laneBlock(lane, red[lane.key])).join("");
     }
 
     function clearResults() {
-      document.getElementById("blueTeam").innerHTML = `<div class="rounded-3xl border border-dashed border-blue-200/20 bg-blue-950/20 text-blue-100/60 text-center py-16">点击“开始随机”生成蓝色方结果</div>`;
-      document.getElementById("redTeam").innerHTML = `<div class="rounded-3xl border border-dashed border-red-200/20 bg-red-950/20 text-red-100/60 text-center py-16">点击“开始随机”生成红色方结果</div>`;
+      $("blueTeam").innerHTML = `<div class="rounded-3xl border border-dashed border-blue-200/20 bg-blue-950/20 text-blue-100/60 text-center py-16">点击“开始随机”生成蓝色方结果</div>`;
+      $("redTeam").innerHTML = `<div class="rounded-3xl border border-dashed border-red-200/20 bg-red-950/20 text-red-100/60 text-center py-16">点击“开始随机”生成红色方结果</div>`;
     }
 
     function clampCount(delta) {
-      const input = document.getElementById("count");
-      const value = Math.max(1, Math.min(20, (Number(input.value) || 3) + delta));
-      input.value = value;
+      const input = $("count");
+      input.value = Math.max(1, Math.min(20, (Number(input.value) || 3) + delta));
     }
 
-    document.getElementById("randomBtn").addEventListener("click", randomize);
-    document.getElementById("clearBtn").addEventListener("click", clearResults);
-    document.getElementById("minusBtn").addEventListener("click", () => clampCount(-1));
-    document.getElementById("plusBtn").addEventListener("click", () => clampCount(1));
+    $("randomBtn").addEventListener("click", randomize);
+    $("clearBtn").addEventListener("click", clearResults);
+    $("minusBtn").addEventListener("click", () => clampCount(-1));
+    $("plusBtn").addEventListener("click", () => clampCount(1));
+
     clearResults();
   </script>
 </body>
