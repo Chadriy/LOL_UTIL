@@ -13,34 +13,11 @@
         radial-gradient(circle at 50% 110%, rgba(202, 138, 4, .16), transparent 38%),
         #020617;
     }
-    .glass {
-      background: rgba(15, 23, 42, .72);
-      backdrop-filter: blur(18px);
-      box-shadow: 0 24px 80px rgba(0, 0, 0, .35);
-    }
-    .hero-card {
-      transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease, background .18s ease;
-    }
-    .hero-card:hover {
-      transform: translateY(-3px);
-      border-color: rgba(234, 179, 8, .65);
-      box-shadow: 0 12px 28px rgba(0, 0, 0, .35), 0 0 22px rgba(234, 179, 8, .10);
-      background: rgba(15, 23, 42, .92);
-    }
-    .gold-text {
-      background: linear-gradient(90deg, #fde68a, #f59e0b, #fef3c7);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-    }
-    .lane-title::before {
-      content: "";
-      width: 8px;
-      height: 8px;
-      border-radius: 999px;
-      background: #facc15;
-      box-shadow: 0 0 18px rgba(250, 204, 21, .8);
-    }
+    .glass { background: rgba(15, 23, 42, .72); backdrop-filter: blur(18px); box-shadow: 0 24px 80px rgba(0,0,0,.35); }
+    .hero-card { transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease, background .18s ease; }
+    .hero-card:hover { transform: translateY(-3px); border-color: rgba(234,179,8,.65); box-shadow: 0 12px 28px rgba(0,0,0,.35), 0 0 22px rgba(234,179,8,.10); background: rgba(15,23,42,.92); }
+    .gold-text { background: linear-gradient(90deg, #fde68a, #f59e0b, #fef3c7); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .lane-title::before { content: ""; width: 8px; height: 8px; border-radius: 999px; background: #facc15; box-shadow: 0 0 18px rgba(250,204,21,.8); }
   </style>
 </head>
 <body class="min-h-screen text-slate-100 selection:bg-amber-400 selection:text-slate-950">
@@ -48,13 +25,11 @@
     <header class="mb-7 text-center relative">
       <div class="inline-flex items-center gap-2 rounded-full border border-amber-300/25 bg-amber-300/10 px-4 py-1.5 text-xs text-amber-100 shadow-lg shadow-amber-950/20">
         <span class="h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_14px_rgba(52,211,153,.9)]"></span>
-        单 HTML · 国内头像源 · 双方英雄不重复 · 使用英雄称号
+        Python 生成 · OPGG.CN 数据 · 双方英雄不重复 · 使用英雄称号
       </div>
       <h1 class="mt-4 text-4xl md:text-6xl font-black tracking-tight gold-text">英雄联盟5V5英雄随机器</h1>
-      <p class="mt-3 text-slate-300">按分路随机英雄，卡片优先展示英雄称号，蓝色方与红色方不会出现相同英雄。</p>
-      <p class="mt-2 text-xs text-slate-500 max-w-3xl mx-auto leading-relaxed">
-        英雄池为内置近似 OPGG 全球分路常见英雄池；头像优先使用腾讯 LOL 国内资源，加载失败时自动切换 Riot Data Dragon 备用源。
-      </p>
+      <p class="mt-3 text-slate-300">按分路随机英雄，英雄池由 Python 脚本从 opgg.cn/champions 抓取生成。</p>
+      <p class="mt-2 text-sm text-amber-200/90">当前游戏版本：<span id="gameVersion" class="font-bold">-</span></p>
     </header>
 
     <section class="mb-7 rounded-3xl border border-white/10 glass p-4 md:p-5">
@@ -64,23 +39,15 @@
             <label for="count" class="block text-sm font-semibold text-slate-200 mb-2">每个分路随机数量 n</label>
             <div class="flex items-center rounded-2xl border border-white/10 bg-slate-950/70 p-1.5 focus-within:ring-2 focus-within:ring-amber-400/60">
               <button id="minusBtn" class="h-10 w-10 rounded-xl bg-slate-800 hover:bg-slate-700 font-black transition" type="button">−</button>
-              <input id="count" type="number" min="1" max="20" value="3" class="w-20 bg-transparent px-3 py-2 text-center text-lg font-black text-white outline-none" />
+              <input id="count" type="number" min="1" max="5" value="3" class="w-20 bg-transparent px-3 py-2 text-center text-lg font-black text-white outline-none" />
               <button id="plusBtn" class="h-10 w-10 rounded-xl bg-slate-800 hover:bg-slate-700 font-black transition" type="button">+</button>
             </div>
-          </div>
-          <div class="text-xs text-slate-400 leading-relaxed pb-1">
-            <div>建议 n ≤ 5，头像加载更快。</div>
-            <div>当前最大限制为 20。</div>
           </div>
         </div>
 
         <div class="flex flex-col sm:flex-row gap-3">
-          <button id="randomBtn" class="rounded-2xl bg-gradient-to-r from-amber-300 via-yellow-400 to-amber-500 hover:from-amber-200 hover:to-yellow-300 text-slate-950 font-black px-7 py-3 transition shadow-lg shadow-amber-950/30 active:scale-95">
-            开始随机
-          </button>
-          <button id="clearBtn" class="rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 text-slate-100 font-bold px-6 py-3 transition active:scale-95">
-            清空结果
-          </button>
+          <button id="randomBtn" class="rounded-2xl bg-gradient-to-r from-amber-300 via-yellow-400 to-amber-500 hover:from-amber-200 hover:to-yellow-300 text-slate-950 font-black px-7 py-3 transition shadow-lg shadow-amber-950/30 active:scale-95">开始随机</button>
+          <button id="clearBtn" class="rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 text-slate-100 font-bold px-6 py-3 transition active:scale-95">清空结果</button>
         </div>
       </div>
     </section>
@@ -88,10 +55,7 @@
     <main class="grid grid-cols-1 lg:grid-cols-2 gap-5">
       <section class="rounded-[2rem] border border-blue-300/25 bg-blue-950/25 overflow-hidden shadow-2xl shadow-blue-950/30">
         <div class="px-5 py-4 bg-gradient-to-r from-blue-600/45 via-blue-500/20 to-transparent border-b border-blue-300/20 flex items-center justify-between">
-          <div>
-            <h2 class="text-2xl md:text-3xl font-black">蓝色方</h2>
-            <p class="text-xs text-blue-100/70 mt-1">Blue Side</p>
-          </div>
+          <div><h2 class="text-2xl md:text-3xl font-black">蓝色方</h2><p class="text-xs text-blue-100/70 mt-1">Blue Side</p></div>
           <div class="h-11 w-11 rounded-2xl bg-blue-400/20 border border-blue-200/20 grid place-items-center text-blue-100 font-black">B</div>
         </div>
         <div id="blueTeam" class="p-4 space-y-4"></div>
@@ -99,10 +63,7 @@
 
       <section class="rounded-[2rem] border border-red-300/25 bg-red-950/25 overflow-hidden shadow-2xl shadow-red-950/30">
         <div class="px-5 py-4 bg-gradient-to-r from-red-600/45 via-red-500/20 to-transparent border-b border-red-300/20 flex items-center justify-between">
-          <div>
-            <h2 class="text-2xl md:text-3xl font-black">红色方</h2>
-            <p class="text-xs text-red-100/70 mt-1">Red Side</p>
-          </div>
+          <div><h2 class="text-2xl md:text-3xl font-black">红色方</h2><p class="text-xs text-red-100/70 mt-1">Red Side</p></div>
           <div class="h-11 w-11 rounded-2xl bg-red-400/20 border border-red-200/20 grid place-items-center text-red-100 font-black">R</div>
         </div>
         <div id="redTeam" class="p-4 space-y-4"></div>
@@ -110,12 +71,184 @@
     </main>
 
     <footer class="mt-7 text-center text-xs text-slate-500">
-      页面数据为静态内置英雄池；如需更新英雄池，可直接修改 HTML 中的 pools 与 championTitles 数据。
+      英雄池由 Python 脚本从 opgg.cn/champions 生成；重新运行脚本即可更新。
     </footer>
   </div>
 
+  <script type="text/plain" id="heroLaneConfig">
+暗裔剑魔：上路，打野
+九尾妖狐：中路
+离群之刺：上路，中路
+影哨：中路
+牛头酋长：辅助
+铁血狼母：上路，打野
+殇之木乃伊：打野，辅助
+冰晶凤凰：上路，中路，辅助
+黑暗之女：中路
+残月之肃：下路
+寒冰射手：下路
+铸星龙王：中路
+双界灵兔：上路，中路
+沙漠皇帝：中路
+星界游神：辅助
+虚空女皇：打野
+蒸汽机器人：辅助
+复仇焰魂：打野，中路，辅助
+弗雷尔卓德之心：辅助
+狂厄蔷薇：打野
+皮城女警：下路
+青钢影：上路，辅助
+魔蛇之拥：上路，中路
+虚空恐惧：上路
+英勇投弹手：下路
+诺克萨斯之手：上路
+皎月女神：打野，中路
+荣耀行刑官：下路
+祖安狂人：上路，打野
+时间刺客：打野，中路
+蜘蛛女皇：打野，辅助
+痛苦之拥：打野
+探险家：下路
+远古恐惧：打野，辅助
+无双剑姬：上路
+潮汐海灵：打野，中路
+正义巨像：中路，辅助
+海洋之灾：上路
+德玛西亚之力：上路
+迷失之牙：上路
+酒桶：上路，打野
+法外狂徒：打野
+灵罗娃娃：上路
+战争之影：打野
+大发明家：上路
+异画师：中路，辅助
+海兽祭司：上路
+刀锋舞者：上路，中路
+翠神：打野
+风暴之怒：辅助
+德玛西亚皇子：打野
+武器大师：上路，打野
+未来守护者：上路，打野，中路
+戏命师：下路
+暴走萝莉：下路
+虚空之女：下路
+复仇之矛：下路
+天启者：辅助
+死亡颂唱者：打野
+虚空行者：中路
+不祥之刃：中路
+正义天使：上路
+影流之镰：打野
+狂暴之心：上路
+虚空掠夺者：打野
+永猎双子：打野
+暴怒骑士：上路
+深渊巨口：下路
+纳祖芒荣耀：上路
+诡术妖姬：中路，辅助
+盲僧：打野
+曙光女神：辅助
+含羞蓓蕾：打野
+冰霜女巫：中路
+圣枪游侠：下路
+仙灵女巫：辅助
+光辉女郎：中路，辅助
+熔岩巨兽：上路，中路
+虚空先知：上路，中路
+扭曲树精：上路，打野，辅助
+无极剑圣：上路，打野
+明烛：辅助
+赏金猎人：下路，辅助
+齐天大圣：上路，打野
+铁铠冥魂：上路
+堕落天使：辅助
+百裂冥犬：打野，中路
+唤潮鲛姬：辅助
+沙漠死神：上路
+深海泰坦：辅助
+万花通灵：辅助
+狂野女猎手：打野
+不羁之悦：下路
+永恒梦魇：打野
+雪原双子：打野
+狂战士：上路
+发条魔灵：中路
+山隐之焰：上路
+不屈之枪：上路，打野，中路，辅助
+圣锤之毅：上路，打野，辅助
+血港鬼影：辅助
+元素女皇：打野，中路
+德玛西亚之翼：上路
+幻翎：辅助
+披甲龙龟：打野
+虚空遁地兽：打野
+镕铁少女：辅助
+荒漠屠夫：上路
+傲之追猎者：打野
+放逐之刃：上路
+机械公敌：上路
+符文法师：上路，中路
+沙漠玫瑰：下路
+北地之怒：打野
+涤魂圣枪：下路，辅助
+星籁歌姬：辅助
+腕豪：上路
+恶魔小丑：打野，辅助
+暮光之眼：上路，辅助
+龙血武姬：打野
+炼金术士：上路
+亡灵战神：上路，中路
+战争女神：下路
+水晶先锋：打野，辅助
+炽炎雏龙：中路，下路
+琴瑟仙女：辅助
+众星之子：辅助
+诺克萨斯统领：上路，中路，下路，辅助
+解脱者：上路，打野，中路，辅助
+暗黑元首：中路
+河流之王：上路，辅助
+岩雀：打野，中路
+刀锋之影：打野，中路
+瓦洛兰之盾：辅助
+迅捷斥候：上路，辅助
+魂锁典狱长：辅助
+麦林炮手：下路
+巨魔之王：上路
+蛮族之王：上路
+卡牌大师：上路，中路
+瘟疫之源：下路
+兽灵行者：上路，打野
+无畏战车：上路
+惩戒之箭：上路，下路
+暗夜猎手：上路，下路
+邪恶小法师：中路
+虚空之眼：辅助
+愁云使者：中路
+皮城执法官：打野
+破败之王：打野
+机械先驱：中路
+猩红收割者：上路，中路
+不灭狂雷：上路，打野
+祖安怒兽：上路，打野
+逆羽：下路
+远古巫灵：中路，辅助
+德邦总管：上路，打野
+疾风剑豪：上路，中路
+封魔剑魂：上路，中路
+牧魂人：上路
+魔法猫咪：辅助
+生化魔人：上路，打野
+影流之主：打野，中路
+祖安花火：下路
+爆破鬼才：下路
+时光守护者：辅助
+暮光星灵：中路，辅助
+荆棘之兴：打野，辅助
+  </script>
+
   <script>
-    const VERSION = "14.24.1";
+    const OPGG_GAME_VERSION = "16.9";
+    const VERSION = OPGG_GAME_VERSION === "未知" ? "14.24.1" : `${OPGG_GAME_VERSION}.1`;
     const FALLBACK_VERSION = "14.23.1";
 
     const lanes = [
@@ -126,32 +259,208 @@
       { key: "support", name: "辅助", icon: "SUP" }
     ];
 
+    const laneNameToKey = { 上路: "top", 打野: "jungle", 中路: "mid", 下路: "adc", 辅助: "support" };
     const championTitles = {
-      Aatrox: "暗裔剑魔", Ahri: "九尾妖狐", Akali: "离群之刺", Akshan: "影哨", Alistar: "牛头酋长", Ambessa: "铁血狼母", Amumu: "殇之木乃伊", Anivia: "冰晶凤凰", Annie: "黑暗之女", Aphelios: "残月之肃", Ashe: "寒冰射手", AurelionSol: "铸星龙王", Aurora: "双界灵兔", Azir: "沙漠皇帝", Bard: "星界游神", Belveth: "虚空女皇", Blitzcrank: "蒸汽机器人", Brand: "复仇焰魂", Braum: "弗雷尔卓德之心", Briar: "狂厄蔷薇", Caitlyn: "皮城女警", Camille: "青钢影", Cassiopeia: "魔蛇之拥", Chogath: "虚空恐惧", Corki: "英勇投弹手", Darius: "诺克萨斯之手", Diana: "皎月女神", Draven: "荣耀行刑官", DrMundo: "祖安狂人", Ekko: "时间刺客", Elise: "蜘蛛女皇", Evelynn: "痛苦之拥", Ezreal: "探险家", Fiddlesticks: "远古恐惧", Fiora: "无双剑姬", Fizz: "潮汐海灵", Galio: "正义巨像", Gangplank: "海洋之灾", Garen: "德玛西亚之力", Gnar: "迷失之牙", Gragas: "酒桶", Graves: "法外狂徒", Gwen: "灵罗娃娃", Hecarim: "战争之影", Heimerdinger: "大发明家", Hwei: "异画师", Illaoi: "海兽祭司", Irelia: "刀锋舞者", Ivern: "翠神", Janna: "风暴之怒", JarvanIV: "德玛西亚皇子", Jax: "武器大师", Jayce: "未来守护者", Jhin: "戏命师", Jinx: "暴走萝莉", Kaisa: "虚空之女", Kalista: "复仇之矛", Karma: "天启者", Karthus: "死亡颂唱者", Kassadin: "虚空行者", Katarina: "不祥之刃", Kayle: "正义天使", Kayn: "影流之镰", Kennen: "狂暴之心", Khazix: "虚空掠夺者", Kindred: "永猎双子", Kled: "暴怒骑士", KogMaw: "深渊巨口", KSante: "纳祖芒荣耀", Leblanc: "诡术妖姬", LeeSin: "盲僧", Leona: "曙光女神", Lillia: "含羞蓓蕾", Lissandra: "冰霜女巫", Lucian: "圣枪游侠", Lulu: "仙灵女巫", Lux: "光辉女郎", Malphite: "熔岩巨兽", Malzahar: "虚空先知", Maokai: "扭曲树精", MasterYi: "无极剑圣", Milio: "明烛", MissFortune: "赏金猎人", MonkeyKing: "齐天大圣", Mordekaiser: "铁铠冥魂", Morgana: "堕落天使", Naafiri: "百裂冥犬", Nami: "唤潮鲛姬", Nasus: "沙漠死神", Nautilus: "深海泰坦", Neeko: "万花通灵", Nidalee: "狂野女猎手", Nilah: "不羁之悦", Nocturne: "永恒梦魇", Nunu: "雪原双子", Olaf: "狂战士", Orianna: "发条魔灵", Ornn: "山隐之焰", Pantheon: "不屈之枪", Poppy: "圣锤之毅", Pyke: "血港鬼影", Qiyana: "元素女皇", Quinn: "德玛西亚之翼", Rakan: "幻翎", Rammus: "披甲龙龟", RekSai: "虚空遁地兽", Rell: "镕铁少女", Renata: "炼金男爵", Renekton: "荒漠屠夫", Rengar: "傲之追猎者", Riven: "放逐之刃", Rumble: "机械公敌", Ryze: "符文法师", Samira: "沙漠玫瑰", Sejuani: "北地之怒", Senna: "涤魂圣枪", Seraphine: "星籁歌姬", Sett: "腕豪", Shaco: "恶魔小丑", Shen: "暮光之眼", Shyvana: "龙血武姬", Singed: "炼金术士", Sion: "亡灵战神", Sivir: "战争女神", Skarner: "远古巫灵", Smolder: "炽炎雏龙", Sona: "琴瑟仙女", Soraka: "众星之子", Swain: "诺克萨斯统领", Sylas: "解脱者", Syndra: "暗黑元首", TahmKench: "河流之王", Taliyah: "岩雀", Talon: "刀锋之影", Taric: "瓦洛兰之盾", Teemo: "迅捷斥候", Thresh: "魂锁典狱长", Tristana: "麦林炮手", Trundle: "巨魔之王", Tryndamere: "蛮族之王", TwistedFate: "卡牌大师", Twitch: "瘟疫之源", Udyr: "兽灵行者", Urgot: "无畏战车", Varus: "惩戒之箭", Vayne: "暗夜猎手", Veigar: "邪恶小法师", Velkoz: "虚空之眼", Vex: "愁云使者", Vi: "皮城执法官", Viego: "破败之王", Viktor: "机械先驱", Vladimir: "猩红收割者", Volibear: "不灭狂雷", Warwick: "祖安怒兽", Xayah: "逆羽", Xerath: "远古巫灵", XinZhao: "德邦总管", Yasuo: "疾风剑豪", Yone: "封魔剑魂", Yorick: "牧魂人", Yuumi: "魔法猫咪", Zac: "生化魔人", Zed: "影流之主", Zeri: "祖安花火", Ziggs: "爆破鬼才", Zilean: "时光守护者", Zoe: "暮光星灵", Zyra: "荆棘之兴"
-    };
+      "Aatrox": "暗裔剑魔",
+      "Ahri": "九尾妖狐",
+      "Akali": "离群之刺",
+      "Akshan": "影哨",
+      "Alistar": "牛头酋长",
+      "Ambessa": "铁血狼母",
+      "Amumu": "殇之木乃伊",
+      "Anivia": "冰晶凤凰",
+      "Annie": "黑暗之女",
+      "Aphelios": "残月之肃",
+      "Ashe": "寒冰射手",
+      "AurelionSol": "铸星龙王",
+      "Aurora": "双界灵兔",
+      "Azir": "沙漠皇帝",
+      "Bard": "星界游神",
+      "Belveth": "虚空女皇",
+      "Blitzcrank": "蒸汽机器人",
+      "Brand": "复仇焰魂",
+      "Braum": "弗雷尔卓德之心",
+      "Briar": "狂厄蔷薇",
+      "Caitlyn": "皮城女警",
+      "Camille": "青钢影",
+      "Cassiopeia": "魔蛇之拥",
+      "Chogath": "虚空恐惧",
+      "Corki": "英勇投弹手",
+      "Darius": "诺克萨斯之手",
+      "Diana": "皎月女神",
+      "Draven": "荣耀行刑官",
+      "DrMundo": "祖安狂人",
+      "Ekko": "时间刺客",
+      "Elise": "蜘蛛女皇",
+      "Evelynn": "痛苦之拥",
+      "Ezreal": "探险家",
+      "Fiddlesticks": "远古恐惧",
+      "Fiora": "无双剑姬",
+      "Fizz": "潮汐海灵",
+      "Galio": "正义巨像",
+      "Gangplank": "海洋之灾",
+      "Garen": "德玛西亚之力",
+      "Gnar": "迷失之牙",
+      "Gragas": "酒桶",
+      "Graves": "法外狂徒",
+      "Gwen": "灵罗娃娃",
+      "Hecarim": "战争之影",
+      "Heimerdinger": "大发明家",
+      "Hwei": "异画师",
+      "Illaoi": "海兽祭司",
+      "Irelia": "刀锋舞者",
+      "Ivern": "翠神",
+      "Janna": "风暴之怒",
+      "JarvanIV": "德玛西亚皇子",
+      "Jax": "武器大师",
+      "Jayce": "未来守护者",
+      "Jhin": "戏命师",
+      "Jinx": "暴走萝莉",
+      "Kaisa": "虚空之女",
+      "Kalista": "复仇之矛",
+      "Karma": "天启者",
+      "Karthus": "死亡颂唱者",
+      "Kassadin": "虚空行者",
+      "Katarina": "不祥之刃",
+      "Kayle": "正义天使",
+      "Kayn": "影流之镰",
+      "Kennen": "狂暴之心",
+      "Khazix": "虚空掠夺者",
+      "Kindred": "永猎双子",
+      "Kled": "暴怒骑士",
+      "KogMaw": "深渊巨口",
+      "KSante": "纳祖芒荣耀",
+      "Leblanc": "诡术妖姬",
+      "LeeSin": "盲僧",
+      "Leona": "曙光女神",
+      "Lillia": "含羞蓓蕾",
+      "Lissandra": "冰霜女巫",
+      "Lucian": "圣枪游侠",
+      "Lulu": "仙灵女巫",
+      "Lux": "光辉女郎",
+      "Malphite": "熔岩巨兽",
+      "Malzahar": "虚空先知",
+      "Maokai": "扭曲树精",
+      "MasterYi": "无极剑圣",
+      "Milio": "明烛",
+      "MissFortune": "赏金猎人",
+      "MonkeyKing": "齐天大圣",
+      "Mordekaiser": "铁铠冥魂",
+      "Morgana": "堕落天使",
+      "Naafiri": "百裂冥犬",
+      "Nami": "唤潮鲛姬",
+      "Nasus": "沙漠死神",
+      "Nautilus": "深海泰坦",
+      "Neeko": "万花通灵",
+      "Nidalee": "狂野女猎手",
+      "Nilah": "不羁之悦",
+      "Nocturne": "永恒梦魇",
+      "Nunu": "雪原双子",
+      "Olaf": "狂战士",
+      "Orianna": "发条魔灵",
+      "Ornn": "山隐之焰",
+      "Pantheon": "不屈之枪",
+      "Poppy": "圣锤之毅",
+      "Pyke": "血港鬼影",
+      "Qiyana": "元素女皇",
+      "Quinn": "德玛西亚之翼",
+      "Rakan": "幻翎",
+      "Rammus": "披甲龙龟",
+      "RekSai": "虚空遁地兽",
+      "Rell": "镕铁少女",
+      "Renata": "炼金男爵",
+      "Renekton": "荒漠屠夫",
+      "Rengar": "傲之追猎者",
+      "Riven": "放逐之刃",
+      "Rumble": "机械公敌",
+      "Ryze": "符文法师",
+      "Samira": "沙漠玫瑰",
+      "Sejuani": "北地之怒",
+      "Senna": "涤魂圣枪",
+      "Seraphine": "星籁歌姬",
+      "Sett": "腕豪",
+      "Shaco": "恶魔小丑",
+      "Shen": "暮光之眼",
+      "Shyvana": "龙血武姬",
+      "Singed": "炼金术士",
+      "Sion": "亡灵战神",
+      "Sivir": "战争女神",
+      "Skarner": "水晶先锋",
+      "Smolder": "炽炎雏龙",
+      "Sona": "琴瑟仙女",
+      "Soraka": "众星之子",
+      "Swain": "诺克萨斯统领",
+      "Sylas": "解脱者",
+      "Syndra": "暗黑元首",
+      "TahmKench": "河流之王",
+      "Taliyah": "岩雀",
+      "Talon": "刀锋之影",
+      "Taric": "瓦洛兰之盾",
+      "Teemo": "迅捷斥候",
+      "Thresh": "魂锁典狱长",
+      "Tristana": "麦林炮手",
+      "Trundle": "巨魔之王",
+      "Tryndamere": "蛮族之王",
+      "TwistedFate": "卡牌大师",
+      "Twitch": "瘟疫之源",
+      "Udyr": "兽灵行者",
+      "Urgot": "无畏战车",
+      "Varus": "惩戒之箭",
+      "Vayne": "暗夜猎手",
+      "Veigar": "邪恶小法师",
+      "Velkoz": "虚空之眼",
+      "Vex": "愁云使者",
+      "Vi": "皮城执法官",
+      "Viego": "破败之王",
+      "Viktor": "机械先驱",
+      "Vladimir": "猩红收割者",
+      "Volibear": "不灭狂雷",
+      "Warwick": "祖安怒兽",
+      "Xayah": "逆羽",
+      "Xerath": "远古巫灵",
+      "XinZhao": "德邦总管",
+      "Yasuo": "疾风剑豪",
+      "Yone": "封魔剑魂",
+      "Yorick": "牧魂人",
+      "Yuumi": "魔法猫咪",
+      "Zac": "生化魔人",
+      "Zed": "影流之主",
+      "Zeri": "祖安花火",
+      "Ziggs": "爆破鬼才",
+      "Zilean": "时光守护者",
+      "Zoe": "暮光星灵",
+      "Zyra": "荆棘之兴"
+};
 
-    const pools = {
-      top: ["Aatrox","Ambessa","Aurora","Camille","Chogath","Darius","DrMundo","Fiora","Gangplank","Garen","Gnar","Gragas","Gwen","Illaoi","Irelia","Jax","Jayce","Kayle","Kennen","Kled","KSante","Malphite","Mordekaiser","Nasus","Ornn","Pantheon","Poppy","Quinn","Renekton","Riven","Rumble","Sett","Shen","Singed","Sion","TahmKench","Teemo","Trundle","Tryndamere","Urgot","Vayne","Volibear","Yasuo","Yone","Yorick"],
-      jungle: ["Amumu","Belveth","Brand","Briar","Diana","Ekko","Elise","Evelynn","Fiddlesticks","Gragas","Graves","Hecarim","Ivern","JarvanIV","Karthus","Kayn","Khazix","Kindred","LeeSin","Lillia","Maokai","MasterYi","MonkeyKing","Nidalee","Nocturne","Nunu","Olaf","Poppy","Rammus","RekSai","Rengar","Sejuani","Shaco","Shyvana","Skarner","Taliyah","Talon","Trundle","Udyr","Vi","Viego","Volibear","Warwick","XinZhao","Zac"],
-      mid: ["Ahri","Akali","Akshan","Anivia","Annie","AurelionSol","Aurora","Azir","Cassiopeia","Corki","Diana","Ekko","Fizz","Galio","Hwei","Irelia","Kassadin","Katarina","Leblanc","Lissandra","Lux","Malzahar","Naafiri","Neeko","Orianna","Qiyana","Ryze","Swain","Sylas","Syndra","Taliyah","Talon","Tristana","TwistedFate","Veigar","Velkoz","Vex","Viktor","Vladimir","Xerath","Yasuo","Yone","Zed","Ziggs","Zoe"],
-      adc: ["Aphelios","Ashe","Caitlyn","Draven","Ezreal","Jhin","Jinx","Kaisa","Kalista","KogMaw","Lucian","MissFortune","Nilah","Samira","Senna","Seraphine","Sivir","Smolder","Tristana","Twitch","Varus","Vayne","Xayah","Yasuo","Zeri","Ziggs"],
-      support: ["Alistar","Amumu","Bard","Blitzcrank","Brand","Braum","Janna","Karma","Leona","Lulu","Lux","Maokai","Milio","Morgana","Nami","Nautilus","Neeko","Pantheon","Poppy","Pyke","Rakan","Rell","Renata","Senna","Seraphine","Sona","Soraka","Swain","TahmKench","Taric","Thresh","Velkoz","Xerath","Yuumi","Zilean","Zyra"]
-    };
+    const titleToId = Object.fromEntries(Object.entries(championTitles).map(([id, title]) => [title, id]));
+
+    function buildPoolsFromList(listText) {
+      const result = Object.fromEntries(lanes.map(lane => [lane.key, []]));
+
+      listText.split(/\n+/).map(line => line.trim()).filter(Boolean).forEach(line => {
+        const parts = line.split(/[：:]/);
+        if (parts.length < 2) return;
+
+        const id = titleToId[parts[0].trim()];
+        if (!id) return;
+
+        parts.slice(1).join("：").split(/[，,、/\s]+/).map(x => x.trim()).filter(Boolean).forEach(laneName => {
+          const key = laneNameToKey[laneName];
+          if (key && !result[key].includes(id)) result[key].push(id);
+        });
+      });
+
+      return result;
+    }
+
+    const pools = buildPoolsFromList(document.getElementById("heroLaneConfig").textContent.trim());
 
     const $ = id => document.getElementById(id);
     const safeTitle = id => championTitles[id] || id;
 
-    function iconUrl(id) {
-      return `https://game.gtimg.cn/images/lol/act/img/champion/${id}.png`;
-    }
-
-    function fallbackIconUrl(id) {
-      return `https://ddragon.leagueoflegends.com/cdn/${VERSION}/img/champion/${id}.png`;
-    }
-
-    function secondFallbackIconUrl(id) {
-      return `https://ddragon.leagueoflegends.com/cdn/${FALLBACK_VERSION}/img/champion/${id}.png`;
-    }
+    function iconUrl(id) { return `https://game.gtimg.cn/images/lol/act/img/champion/${id}.png`; }
+    function fallbackIconUrl(id) { return `https://ddragon.leagueoflegends.com/cdn/${VERSION}/img/champion/${id}.png`; }
+    function secondFallbackIconUrl(id) { return `https://ddragon.leagueoflegends.com/cdn/${FALLBACK_VERSION}/img/champion/${id}.png`; }
 
     function shuffle(arr) {
       const a = [...arr];
@@ -175,7 +484,6 @@
         <div class="hero-card group flex items-center gap-3 rounded-2xl bg-slate-950/65 border border-white/10 p-2.5 overflow-hidden">
           <div class="relative shrink-0">
             <img src="${iconUrl(id)}" alt="${title}" class="w-14 h-14 rounded-2xl object-cover border border-amber-200/20 shadow-lg shadow-black/30" loading="lazy" onerror="if (!this.dataset.fallback) { this.dataset.fallback='1'; this.src='${fallbackIconUrl(id)}'; } else { this.onerror=null; this.src='${secondFallbackIconUrl(id)}'; }" />
-            <div class="absolute -inset-0.5 rounded-2xl border border-white/10 pointer-events-none"></div>
           </div>
           <div class="min-w-0 flex-1">
             <div class="font-black text-sm md:text-base truncate text-slate-50 group-hover:text-amber-100 transition">${title}</div>
@@ -191,14 +499,12 @@
             <h3 class="lane-title flex items-center gap-2 font-black text-lg">${lane.name}</h3>
             <span class="rounded-full border border-amber-300/20 bg-amber-300/10 px-3 py-1 text-xs text-amber-100">${lane.icon} · ${picks.length} 个</span>
           </div>
-          <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3 p-3">
-            ${picks.map(card).join("")}
-          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3 p-3">${picks.map(card).join("")}</div>
         </div>`;
     }
 
     function randomize() {
-      const n = Math.max(1, Math.min(20, Number($("count").value) || 3));
+      const n = Math.max(1, Math.min(5, Number($("count").value) || 3));
       $("count").value = n;
 
       const used = new Set();
@@ -219,7 +525,7 @@
 
     function clampCount(delta) {
       const input = $("count");
-      input.value = Math.max(1, Math.min(20, (Number(input.value) || 3) + delta));
+      input.value = Math.max(1, Math.min(5, (Number(input.value) || 3) + delta));
     }
 
     $("randomBtn").addEventListener("click", randomize);
@@ -228,6 +534,9 @@
     $("plusBtn").addEventListener("click", () => clampCount(1));
 
     clearResults();
+
+    // 页面显式展示当前版本，方便确认英雄池对应补丁。
+    $("gameVersion").textContent = OPGG_GAME_VERSION;
   </script>
 </body>
 </html>
