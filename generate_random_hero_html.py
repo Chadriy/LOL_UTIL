@@ -11,11 +11,11 @@ from bs4 import BeautifulSoup
 OUTPUT_HTML = "hero_random.html"
 
 OPGG_CN_URLS = {
-    "top": "https://opgg.cn/champions",
-    "jungle": "https://opgg.cn/champions?pos=2",
-    "mid": "https://opgg.cn/champions?pos=3",
-    "adc": "https://opgg.cn/champions?pos=4",
-    "support": "https://opgg.cn/champions?pos=5",
+    "top": "https://opgg.cn/champions?tier=96",
+    "jungle": "https://opgg.cn/champions?tier=96&pos=2",
+    "mid": "https://opgg.cn/champions?tier=96&pos=3",
+    "adc": "https://opgg.cn/champions?tier=96&pos=4",
+    "support": "https://opgg.cn/champions?tier=96&pos=5",
 }
 
 LANE_NAME = {
