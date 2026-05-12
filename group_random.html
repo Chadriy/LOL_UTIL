@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>5V5 分组随机</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background:
+        radial-gradient(circle at 14% 8%, rgba(16, 185, 129, .22), transparent 32%),
+        radial-gradient(circle at 86% 10%, rgba(245, 158, 11, .22), transparent 28%),
+        radial-gradient(circle at 50% 120%, rgba(59, 130, 246, .18), transparent 38%),
+        #030712;
+    }
+    .glass { background: rgba(15, 23, 42, .72); backdrop-filter: blur(16px); box-shadow: 0 18px 60px rgba(0, 0, 0, .38); }
+    .team-card { transition: transform .18s ease, box-shadow .18s ease; }
+    .team-card:hover { transform: translateY(-2px); box-shadow: 0 18px 40px rgba(0, 0, 0, .28); }
+  </style>
+</head>
+<body class="min-h-screen text-slate-100 selection:bg-emerald-300 selection:text-slate-950">
+  <div class="max-w-7xl mx-auto px-4 py-8 md:py-10">
+    <header class="mb-7 text-center">
+      <div class="inline-flex items-center gap-2 rounded-full border border-emerald-300/35 bg-emerald-300/10 px-4 py-1.5 text-xs text-emerald-100">
+        <span class="h-2 w-2 rounded-full bg-amber-300"></span>
+        固定双方队长 · 全员随机分边 · 全员随机分路
+      </div>
+      <h1 class="mt-4 text-4xl md:text-6xl font-black tracking-tight bg-gradient-to-r from-emerald-200 via-cyan-200 to-amber-100 text-transparent bg-clip-text">5V5 分组随机</h1>
+      <p class="mt-3 text-slate-300">输入玩家名单，指定蓝红队长后，一键随机分组并随机每个人的分路位置。</p>
+      <a href="hero_random.html" class="mt-4 inline-flex rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm font-semibold text-slate-200 hover:bg-white/10 transition">返回英雄随机页面</a>
+    </header>
+
+    <section class="glass rounded-3xl border border-white/10 p-4 md:p-5 mb-6">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+        <div>
+          <label for="playersInput" class="block text-sm font-semibold text-slate-200 mb-2">玩家名单（每行一个，或用空格/逗号分隔）</label>
+          <textarea id="playersInput" rows="11" class="w-full rounded-2xl border border-white/10 bg-slate-950/70 p-3 outline-none focus:ring-2 focus:ring-emerald-300/60" placeholder="示例：
+玩家1
+玩家2
+玩家3
+..."></textarea>
+          <p class="mt-2 text-xs text-slate-400">建议 10 人。必须是偶数人数，才能平均分边。</p>
+        </div>
+
+        <div class="space-y-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label for="blueCaptain" class="block text-sm font-semibold text-slate-200 mb-2">蓝色方队长</label>
+              <select id="blueCaptain" class="w-full rounded-2xl border border-blue-300/25 bg-blue-950/30 p-3 outline-none focus:ring-2 focus:ring-blue-300/60"></select>
+            </div>
+            <div>
+              <label for="redCaptain" class="block text-sm font-semibold text-slate-200 mb-2">红色方队长</label>
+              <select id="redCaptain" class="w-full rounded-2xl border border-red-300/25 bg-red-950/30 p-3 outline-none focus:ring-2 focus:ring-red-300/60"></select>
+            </div>
+          </div>
+
+          <div class="flex flex-wrap gap-3">
+            <button id="refreshBtn" class="rounded-2xl border border-white/15 bg-white/5 hover:bg-white/10 px-5 py-3 font-bold transition">刷新队长列表</button>
+            <button id="randomGroupBtn" class="rounded-2xl bg-gradient-to-r from-emerald-300 via-cyan-300 to-amber-200 text-slate-950 font-black px-6 py-3 hover:brightness-110 transition">开始分组随机</button>
+            <button id="clearBtn" class="rounded-2xl border border-white/15 bg-white/5 hover:bg-white/10 px-5 py-3 font-bold transition">清空结果</button>
+          </div>
+
+          <div id="errorText" class="hidden rounded-2xl border border-rose-300/30 bg-rose-900/25 px-4 py-3 text-rose-100 text-sm"></div>
+        </div>
+      </div>
+    </section>
+
+    <main class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+      <section class="team-card rounded-[2rem] border border-blue-300/25 bg-blue-950/25 overflow-hidden shadow-2xl shadow-blue-950/30">
+        <div class="px-5 py-4 bg-gradient-to-r from-blue-600/45 via-blue-500/20 to-transparent border-b border-blue-300/20 flex items-center justify-between">
+          <div><h2 class="text-2xl md:text-3xl font-black">蓝色方</h2><p class="text-xs text-blue-100/70 mt-1">Blue Side</p></div>
+          <div class="h-11 w-11 rounded-2xl bg-blue-400/20 border border-blue-200/20 grid place-items-center text-blue-100 font-black">B</div>
+        </div>
+        <div id="blueTeam" class="p-4"></div>
+      </section>
+
+      <section class="team-card rounded-[2rem] border border-red-300/25 bg-red-950/25 overflow-hidden shadow-2xl shadow-red-950/30">
+        <div class="px-5 py-4 bg-gradient-to-r from-red-600/45 via-red-500/20 to-transparent border-b border-red-300/20 flex items-center justify-between">
+          <div><h2 class="text-2xl md:text-3xl font-black">红色方</h2><p class="text-xs text-red-100/70 mt-1">Red Side</p></div>
+          <div class="h-11 w-11 rounded-2xl bg-red-400/20 border border-red-200/20 grid place-items-center text-red-100 font-black">R</div>
+        </div>
+        <div id="redTeam" class="p-4"></div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const lanes = ["上路", "打野", "中路", "下路", "辅助"];
+    const $ = id => document.getElementById(id);
+
+    function shuffle(arr) {
+      const a = [...arr];
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    function parsePlayers() {
+      const raw = $("playersInput").value || "";
+      const parts = raw
+        .split(/[\n,，、\t ]+/)
+        .map(x => x.trim())
+        .filter(Boolean);
+
+      const unique = [];
+      const seen = new Set();
+      for (const p of parts) {
+        if (!seen.has(p)) {
+          seen.add(p);
+          unique.push(p);
+        }
+      }
+      return unique;
+    }
+
+    function setError(text) {
+      const box = $("errorText");
+      if (!text) {
+        box.classList.add("hidden");
+        box.textContent = "";
+        return;
+      }
+      box.classList.remove("hidden");
+      box.textContent = text;
+    }
+
+    function fillCaptainOptions() {
+      const players = parsePlayers();
+      const blueSelect = $("blueCaptain");
+      const redSelect = $("redCaptain");
+
+      const prevBlue = blueSelect.value;
+      const prevRed = redSelect.value;
+
+      blueSelect.innerHTML = "";
+      redSelect.innerHTML = "";
+
+      if (!players.length) {
+        blueSelect.innerHTML = '<option value="">请先输入玩家</option>';
+        redSelect.innerHTML = '<option value="">请先输入玩家</option>';
+        return;
+      }
+
+      for (const p of players) {
+        blueSelect.insertAdjacentHTML("beforeend", `<option value="${p}">${p}</option>`);
+        redSelect.insertAdjacentHTML("beforeend", `<option value="${p}">${p}</option>`);
+      }
+
+      blueSelect.value = players.includes(prevBlue) ? prevBlue : players[0];
+      redSelect.value = players.includes(prevRed)
+        ? prevRed
+        : (players[1] || players[0]);
+    }
+
+    function laneByIndex(index) {
+      const lane = lanes[index % lanes.length];
+      const round = Math.floor(index / lanes.length);
+      return round === 0 ? lane : `${lane}${round + 1}`;
+    }
+
+    function assignTeamLanes(teamNames) {
+      const laneOrder = shuffle(Array.from({ length: teamNames.length }, (_, i) => laneByIndex(i)));
+      return teamNames.map((name, i) => ({ name, lane: laneOrder[i] }));
+    }
+
+    function renderTeam(teamData, captainName, side) {
+      const tone = side === "blue"
+        ? "border-blue-200/20 bg-blue-950/25 text-blue-100"
+        : "border-red-200/20 bg-red-950/25 text-red-100";
+
+      return `
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          ${teamData.map(player => `
+            <div class="rounded-2xl border border-white/10 bg-slate-950/55 p-3">
+              <div class="flex items-center justify-between gap-3">
+                <div class="min-w-0">
+                  <div class="font-black text-base truncate">${player.name}</div>
+                  <div class="text-xs text-slate-300 mt-1">分路：<span class="font-semibold text-amber-100">${player.lane}</span></div>
+                </div>
+                ${player.name === captainName
+                  ? `<span class="shrink-0 rounded-full border px-2.5 py-1 text-xs font-bold ${tone}">队长</span>`
+                  : ""}
+              </div>
+            </div>
+          `).join("")}
+        </div>
+      `;
+    }
+
+    function randomGroup() {
+      setError("");
+
+      const players = parsePlayers();
+      if (players.length < 2) {
+        setError("请至少输入 2 位玩家。");
+        return;
+      }
+      if (players.length % 2 !== 0) {
+        setError("人数必须为偶数，才能平均随机分到两边。");
+        return;
+      }
+
+      const blueCaptain = $("blueCaptain").value;
+      const redCaptain = $("redCaptain").value;
+
+      if (!blueCaptain || !redCaptain) {
+        setError("请先选择蓝红双方队长。");
+        return;
+      }
+      if (blueCaptain === redCaptain) {
+        setError("蓝红双方队长不能是同一个人。");
+        return;
+      }
+      if (!players.includes(blueCaptain) || !players.includes(redCaptain)) {
+        setError("队长必须来自当前玩家名单。");
+        return;
+      }
+
+      const teamSize = players.length / 2;
+      const rest = players.filter(p => p !== blueCaptain && p !== redCaptain);
+      const restShuffled = shuffle(rest);
+
+      const blueNames = [blueCaptain, ...restShuffled.slice(0, teamSize - 1)];
+      const redNames = [redCaptain, ...restShuffled.slice(teamSize - 1)];
+
+      const blueTeam = assignTeamLanes(shuffle(blueNames));
+      const redTeam = assignTeamLanes(shuffle(redNames));
+
+      $("blueTeam").innerHTML = renderTeam(blueTeam, blueCaptain, "blue");
+      $("redTeam").innerHTML = renderTeam(redTeam, redCaptain, "red");
+    }
+
+    function clearResults() {
+      $("blueTeam").innerHTML = '<div class="rounded-3xl border border-dashed border-blue-200/20 bg-blue-950/20 text-blue-100/60 text-center py-16">点击“开始分组随机”生成蓝色方结果</div>';
+      $("redTeam").innerHTML = '<div class="rounded-3xl border border-dashed border-red-200/20 bg-red-950/20 text-red-100/60 text-center py-16">点击“开始分组随机”生成红色方结果</div>';
+      setError("");
+    }
+
+    $("refreshBtn").addEventListener("click", fillCaptainOptions);
+    $("randomGroupBtn").addEventListener("click", randomGroup);
+    $("clearBtn").addEventListener("click", clearResults);
+    $("playersInput").addEventListener("input", fillCaptainOptions);
+
+    fillCaptainOptions();
+    clearResults();
+  </script>
+</body>
+</html>
