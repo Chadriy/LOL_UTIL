@@ -23,7 +23,7 @@
     <header class="mb-7 text-center">
       <div class="inline-flex items-center gap-2 rounded-full border border-emerald-300/35 bg-emerald-300/10 px-4 py-1.5 text-xs text-emerald-100">
         <span class="h-2 w-2 rounded-full bg-amber-300"></span>
-        固定双方队长 · 全员随机分边 · 全员随机分路 · 战力尽量平衡
+        固定双方队长 · 全员随机分边 · 全员随机分路 · 随机英雄不重复 · 战力尽量平衡
       </div>
       <h1 class="mt-4 text-4xl md:text-6xl font-black tracking-tight bg-gradient-to-r from-emerald-200 via-cyan-200 to-amber-100 text-transparent bg-clip-text">5V5 分组随机（杯赛平衡版）</h1>
       <p class="mt-3 text-slate-300">支持从飞升杯/神将杯选手池勾选加入名单，随机分组时会尽量降低双方总战力差。</p>
@@ -130,11 +130,245 @@
     </main>
 
     <div id="balanceHint" class="mt-5 rounded-2xl border border-white/10 bg-slate-900/45 px-4 py-3 text-sm text-slate-200">等待分组...</div>
+
+    <section class="glass rounded-3xl border border-white/10 p-4 md:p-5 mt-6 mb-6">
+      <div class="flex flex-col lg:flex-row lg:items-center gap-4 justify-between">
+        <div class="flex flex-col sm:flex-row gap-4 sm:items-end">
+          <div>
+            <h2 class="text-xl md:text-2xl font-black">随机英雄池</h2>
+            <p class="text-xs text-slate-300 mt-1">独立于分组结果；蓝红双方英雄不重复。</p>
+          </div>
+          <div>
+            <label for="heroCount" class="block text-sm font-semibold text-slate-200 mb-2">每个分路随机数量 n</label>
+            <div class="flex items-center rounded-2xl border border-white/10 bg-slate-950/70 p-1.5 focus-within:ring-2 focus-within:ring-amber-400/60">
+              <button id="heroMinusBtn" class="h-10 w-10 rounded-xl bg-slate-800 hover:bg-slate-700 font-black transition" type="button">-</button>
+              <input id="heroCount" type="number" min="1" max="5" value="3" class="w-20 bg-transparent px-3 py-2 text-center text-lg font-black text-white outline-none" />
+              <button id="heroPlusBtn" class="h-10 w-10 rounded-xl bg-slate-800 hover:bg-slate-700 font-black transition" type="button">+</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex flex-col sm:flex-row gap-3">
+          <button id="heroRandomBtn" class="rounded-2xl bg-gradient-to-r from-amber-300 via-yellow-400 to-amber-500 hover:from-amber-200 hover:to-yellow-300 text-slate-950 font-black px-7 py-3 transition">开始随机英雄</button>
+          <button id="heroClearBtn" class="rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 text-slate-100 font-bold px-6 py-3 transition">清空英雄结果</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+      <section class="rounded-[2rem] border border-blue-300/25 bg-blue-950/25 overflow-hidden shadow-2xl shadow-blue-950/30">
+        <div class="px-5 py-4 bg-gradient-to-r from-blue-600/45 via-blue-500/20 to-transparent border-b border-blue-300/20 flex items-center justify-between">
+          <div>
+            <h2 class="text-2xl md:text-3xl font-black">蓝色方英雄池</h2>
+            <p class="text-xs text-blue-100/70 mt-1">Blue Hero Pool</p>
+          </div>
+          <div class="h-11 w-11 rounded-2xl bg-blue-400/20 border border-blue-200/20 grid place-items-center text-blue-100 font-black">B</div>
+        </div>
+        <div id="blueHeroTeam" class="p-4 space-y-4"></div>
+      </section>
+
+      <section class="rounded-[2rem] border border-red-300/25 bg-red-950/25 overflow-hidden shadow-2xl shadow-red-950/30">
+        <div class="px-5 py-4 bg-gradient-to-r from-red-600/45 via-red-500/20 to-transparent border-b border-red-300/20 flex items-center justify-between">
+          <div>
+            <h2 class="text-2xl md:text-3xl font-black">红色方英雄池</h2>
+            <p class="text-xs text-red-100/70 mt-1">Red Hero Pool</p>
+          </div>
+          <div class="h-11 w-11 rounded-2xl bg-red-400/20 border border-red-200/20 grid place-items-center text-red-100 font-black">R</div>
+        </div>
+        <div id="redHeroTeam" class="p-4 space-y-4"></div>
+      </section>
+    </section>
   </div>
 
+  <script type="text/plain" id="heroLaneConfig">
+黑暗之女·安妮：中路
+狂战士·奥拉夫：上路
+正义巨像·加里奥：中路，辅助
+卡牌大师·崔斯特：上路，中路
+德邦总管·赵信：上路，打野
+无畏战车·厄加特：上路
+诡术妖姬·乐芙兰：中路，辅助
+猩红收割者·弗拉基米尔：上路，中路
+远古恐惧·费德提克：打野，辅助
+正义天使·凯尔：上路
+无极剑圣·易：打野
+牛头酋长·阿利斯塔：辅助
+符文法师·瑞兹：上路，中路
+亡灵战神·赛恩：上路，中路
+战争女神·希维尔：下路
+众星之子·索拉卡：辅助
+迅捷斥候·提莫：上路
+麦林炮手·崔丝塔娜：中路，下路
+祖安怒兽·沃里克：上路，打野
+雪原双子·努努和威朗普：打野，中路
+赏金猎人·厄运小姐：下路
+寒冰射手·艾希：下路
+蛮族之王·泰达米尔：上路
+武器大师·贾克斯：上路，打野
+堕落天使·莫甘娜：辅助
+时光守护者·基兰：辅助
+炼金术士·辛吉德：上路，中路
+痛苦之拥·伊芙琳：打野
+瘟疫之源·图奇：下路
+死亡颂唱者·卡尔萨斯：打野
+虚空恐惧·科加斯：上路
+殇之木乃伊·阿木木：辅助
+披甲龙龟·拉莫斯：打野
+冰晶凤凰·艾尼维亚：上路，中路，辅助
+恶魔小丑·萨科：打野，辅助
+祖安狂人·蒙多医生：上路
+琴瑟仙女·娑娜：辅助
+虚空行者·卡萨丁：中路
+刀锋舞者·艾瑞莉娅：上路，中路
+风暴之怒·迦娜：辅助
+海洋之灾·普朗克：上路
+英勇投弹手·库奇：下路
+天启者·卡尔玛：辅助
+瓦洛兰之盾·塔里克：辅助
+邪恶小法师·维迦：中路
+诺克萨斯统领·斯维因：上路，中路，下路，辅助
+皮城女警·凯特琳：下路
+蒸汽机器人·布里茨：辅助
+熔岩巨兽·墨菲特：上路，中路
+不祥之刃·卡特琳娜：中路
+永恒梦魇·魔腾：打野
+扭曲树精·茂凯：上路，打野，辅助
+荒漠屠夫·雷克顿：上路
+德玛西亚皇子·嘉文四世：打野
+蜘蛛女皇·伊莉丝：打野，辅助
+发条魔灵·奥莉安娜：中路
+齐天大圣·孙悟空：上路，打野
+复仇焰魂·布兰德：上路，打野，中路，下路，辅助
+盲僧·李青：打野
+暗夜猎手·薇恩：上路，下路
+机械公敌·兰博：上路
+魔蛇之拥·卡西奥佩娅：上路，中路，下路
+上古领主·斯卡纳：上路，打野，辅助
+大发明家·黑默丁格：上路
+沙漠死神·内瑟斯：上路
+狂野女猎手·奈德丽：打野
+兽灵行者·乌迪尔：上路，打野
+圣锤之毅·波比：上路，打野，辅助
+酒桶·古拉加斯：上路，打野
+不屈之枪·潘森：上路，打野，中路，辅助
+探险家·伊泽瑞尔：下路
+铁铠冥魂·莫德凯撒：上路
+牧魂人·约里克：上路
+离群之刺·阿卡丽：上路，中路
+狂暴之心·凯南：上路
+德玛西亚之力·盖伦：上路
+曙光女神·蕾欧娜：辅助
+虚空先知·玛尔扎哈：中路
+刀锋之影·泰隆：打野，中路
+放逐之刃·锐雯：上路
+深渊巨口·克格莫：下路
+暮光之眼·慎：上路
+光辉女郎·拉克丝：中路，辅助
+远古巫灵·泽拉斯：中路，下路，辅助
+龙血武姬·希瓦娜：打野
+九尾妖狐·阿狸：中路
+法外狂徒·格雷福斯：打野
+潮汐海灵·菲兹：打野，中路
+不灭狂雷·沃利贝尔：上路
+傲之追猎者·雷恩加尔：上路，打野
+惩戒之箭·韦鲁斯：上路，下路
+深海泰坦·诺提勒斯：辅助
+奥术先驱·维克托：中路
+北地之怒·瑟庄妮：打野
+无双剑姬·菲奥娜：上路
+爆破鬼才·吉格斯：下路
+仙灵女巫·璐璐：辅助
+荣耀行刑官·德莱文：下路
+战争之影·赫卡里姆：打野
+虚空掠夺者·卡兹克：打野
+诺克萨斯之手·德莱厄斯：上路
+未来守护者·杰斯：上路，打野，中路
+冰霜女巫·丽桑卓：中路
+皎月女神·黛安娜：打野，中路
+德玛西亚之翼·奎因：上路
+暗黑元首·辛德拉：中路
+铸星龙王·奥瑞利安·索尔：中路
+影流之镰·凯隐：打野
+暮光星灵·佐伊：中路，辅助
+荆棘之兴·婕拉：打野，辅助
+虚空之女·卡莎：下路
+星籁歌姬·萨勒芬妮：辅助
+迷失之牙·纳尔：上路
+生化魔人·扎克：上路，打野
+疾风剑豪·亚索：上路，中路
+虚空之眼·维克兹：中路，辅助
+岩雀·塔莉垭：打野，中路
+青钢影·卡蜜尔：上路，辅助
+影哨·阿克尚：中路
+虚空女皇·卑尔维斯：打野
+弗雷尔卓德之心·布隆：辅助
+戏命师·烬：下路
+永猎双子·千珏：打野
+祖安花火·泽丽：下路
+暴走萝莉·金克丝：下路
+河流之王·塔姆：上路，辅助
+狂厄蔷薇·贝蕾亚：打野
+破败之王·佛耶戈：打野
+涤魂圣枪·赛娜：下路，辅助
+圣枪游侠·卢锡安：下路
+影流之主·劫：打野，中路
+暴怒骑士·克烈：上路
+时间刺客·艾克：打野，中路
+元素女皇·奇亚娜：打野，中路
+皮城执法官·蔚：打野
+暗裔剑魔·亚托克斯：上路，打野
+唤潮鲛姬·娜美：辅助
+沙漠皇帝·阿兹尔：中路
+魔法猫咪·悠米：辅助
+沙漠玫瑰·莎弥拉：下路
+魂锁典狱长·锤石：辅助
+海兽祭司·俄洛伊：上路
+虚空遁地兽·雷克塞：打野
+翠神·艾翁：打野
+复仇之矛·卡莉丝塔：下路
+星界游神·巴德：辅助
+幻翎·洛：辅助
+逆羽·霞：下路
+山隐之焰·奥恩：上路
+解脱者·塞拉斯：上路，打野，中路，辅助
+万花通灵·妮蔻：中路，辅助
+残月之肃·厄斐琉斯：下路
+镕铁少女·芮尔：辅助
+血港鬼影·派克：辅助
+愁云使者·薇古丝：中路
+封魔剑魂·永恩：上路，中路
+铁血狼母·安蓓萨：上路，打野
+流光镜影·梅尔：中路，下路，辅助
+不破之誓·芸阿娜：下路
+腕豪·瑟提：上路
+含羞蓓蕾·莉莉娅：打野
+灵罗娃娃·格温：上路，打野
+双界灵兔·阿萝拉：上路，中路
+不羁之悦·尼菈：下路
+纳祖芒荣耀·奎桑提：上路
+炽炎雏龙·斯莫德：下路
+明烛·米利欧：辅助
+不落魔锋·亚恒：上路
+异画师·彗：中路，辅助
+百裂冥犬·纳亚菲利：打野，中路
+  </script>
+
   <script>
-    const lanes = ["上路", "打野", "中路", "下路", "辅助"];
+    const playerLanes = ["上路", "打野", "中路", "下路", "辅助"];
     const $ = id => document.getElementById(id);
+    const OPGG_GAME_VERSION = "16.9";
+    const VERSION = OPGG_GAME_VERSION === "未知" ? "14.24.1" : `${OPGG_GAME_VERSION}.1`;
+    const FALLBACK_VERSION = "14.23.1";
+
+    const heroLanes = [
+      { key: "top", name: "上路", icon: "TOP" },
+      { key: "jungle", name: "打野", icon: "JUG" },
+      { key: "mid", name: "中路", icon: "MID" },
+      { key: "adc", name: "下路", icon: "ADC" },
+      { key: "support", name: "辅助", icon: "SUP" }
+    ];
+
+    const laneNameToKey = { 上路: "top", 打野: "jungle", 中路: "mid", 下路: "adc", 辅助: "support" };
 
     const presetPlayers = {
       ascend: ["清风哥", "沫涵", "龙弟", "指挥", "心动", "大飞", "鱼丸", "掉线", "屏蔽", "帮忙", "李哥", "何总", "帮忙哥", "O神"],
@@ -153,6 +387,230 @@
     }
     for (const name of presetPlayers.general) {
       playerTierMap.set(name, "general");
+    }
+
+    const championTitles = {
+      "Annie": "黑暗之女·安妮",
+      "Olaf": "狂战士·奥拉夫",
+      "Galio": "正义巨像·加里奥",
+      "TwistedFate": "卡牌大师·崔斯特",
+      "XinZhao": "德邦总管·赵信",
+      "Urgot": "无畏战车·厄加特",
+      "Leblanc": "诡术妖姬·乐芙兰",
+      "Vladimir": "猩红收割者·弗拉基米尔",
+      "Fiddlesticks": "远古恐惧·费德提克",
+      "Kayle": "正义天使·凯尔",
+      "MasterYi": "无极剑圣·易",
+      "Alistar": "牛头酋长·阿利斯塔",
+      "Ryze": "符文法师·瑞兹",
+      "Sion": "亡灵战神·赛恩",
+      "Sivir": "战争女神·希维尔",
+      "Soraka": "众星之子·索拉卡",
+      "Teemo": "迅捷斥候·提莫",
+      "Tristana": "麦林炮手·崔丝塔娜",
+      "Warwick": "祖安怒兽·沃里克",
+      "Nunu": "雪原双子·努努和威朗普",
+      "MissFortune": "赏金猎人·厄运小姐",
+      "Ashe": "寒冰射手·艾希",
+      "Tryndamere": "蛮族之王·泰达米尔",
+      "Jax": "武器大师·贾克斯",
+      "Morgana": "堕落天使·莫甘娜",
+      "Zilean": "时光守护者·基兰",
+      "Singed": "炼金术士·辛吉德",
+      "Evelynn": "痛苦之拥·伊芙琳",
+      "Twitch": "瘟疫之源·图奇",
+      "Karthus": "死亡颂唱者·卡尔萨斯",
+      "Chogath": "虚空恐惧·科加斯",
+      "Amumu": "殇之木乃伊·阿木木",
+      "Rammus": "披甲龙龟·拉莫斯",
+      "Anivia": "冰晶凤凰·艾尼维亚",
+      "Shaco": "恶魔小丑·萨科",
+      "DrMundo": "祖安狂人·蒙多医生",
+      "Sona": "琴瑟仙女·娑娜",
+      "Kassadin": "虚空行者·卡萨丁",
+      "Irelia": "刀锋舞者·艾瑞莉娅",
+      "Janna": "风暴之怒·迦娜",
+      "Gangplank": "海洋之灾·普朗克",
+      "Corki": "英勇投弹手·库奇",
+      "Karma": "天启者·卡尔玛",
+      "Taric": "瓦洛兰之盾·塔里克",
+      "Veigar": "邪恶小法师·维迦",
+      "Trundle": "巨魔之王·特朗德尔",
+      "Swain": "诺克萨斯统领·斯维因",
+      "Caitlyn": "皮城女警·凯特琳",
+      "Blitzcrank": "蒸汽机器人·布里茨",
+      "Malphite": "熔岩巨兽·墨菲特",
+      "Katarina": "不祥之刃·卡特琳娜",
+      "Nocturne": "永恒梦魇·魔腾",
+      "Maokai": "扭曲树精·茂凯",
+      "Renekton": "荒漠屠夫·雷克顿",
+      "JarvanIV": "德玛西亚皇子·嘉文四世",
+      "Elise": "蜘蛛女皇·伊莉丝",
+      "Orianna": "发条魔灵·奥莉安娜",
+      "MonkeyKing": "齐天大圣·孙悟空",
+      "Brand": "复仇焰魂·布兰德",
+      "LeeSin": "盲僧·李青",
+      "Vayne": "暗夜猎手·薇恩",
+      "Rumble": "机械公敌·兰博",
+      "Cassiopeia": "魔蛇之拥·卡西奥佩娅",
+      "Skarner": "上古领主·斯卡纳",
+      "Heimerdinger": "大发明家·黑默丁格",
+      "Nasus": "沙漠死神·内瑟斯",
+      "Nidalee": "狂野女猎手·奈德丽",
+      "Udyr": "兽灵行者·乌迪尔",
+      "Poppy": "圣锤之毅·波比",
+      "Gragas": "酒桶·古拉加斯",
+      "Pantheon": "不屈之枪·潘森",
+      "Ezreal": "探险家·伊泽瑞尔",
+      "Mordekaiser": "铁铠冥魂·莫德凯撒",
+      "Yorick": "牧魂人·约里克",
+      "Akali": "离群之刺·阿卡丽",
+      "Kennen": "狂暴之心·凯南",
+      "Garen": "德玛西亚之力·盖伦",
+      "Leona": "曙光女神·蕾欧娜",
+      "Malzahar": "虚空先知·玛尔扎哈",
+      "Talon": "刀锋之影·泰隆",
+      "Riven": "放逐之刃·锐雯",
+      "KogMaw": "深渊巨口·克格莫",
+      "Shen": "暮光之眼·慎",
+      "Lux": "光辉女郎·拉克丝",
+      "Xerath": "远古巫灵·泽拉斯",
+      "Shyvana": "龙血武姬·希瓦娜",
+      "Ahri": "九尾妖狐·阿狸",
+      "Graves": "法外狂徒·格雷福斯",
+      "Fizz": "潮汐海灵·菲兹",
+      "Volibear": "不灭狂雷·沃利贝尔",
+      "Rengar": "傲之追猎者·雷恩加尔",
+      "Varus": "惩戒之箭·韦鲁斯",
+      "Nautilus": "深海泰坦·诺提勒斯",
+      "Viktor": "奥术先驱·维克托",
+      "Sejuani": "北地之怒·瑟庄妮",
+      "Fiora": "无双剑姬·菲奥娜",
+      "Ziggs": "爆破鬼才·吉格斯",
+      "Lulu": "仙灵女巫·璐璐",
+      "Draven": "荣耀行刑官·德莱文",
+      "Hecarim": "战争之影·赫卡里姆",
+      "Khazix": "虚空掠夺者·卡兹克",
+      "Darius": "诺克萨斯之手·德莱厄斯",
+      "Jayce": "未来守护者·杰斯",
+      "Lissandra": "冰霜女巫·丽桑卓",
+      "Diana": "皎月女神·黛安娜",
+      "Quinn": "德玛西亚之翼·奎因",
+      "Syndra": "暗黑元首·辛德拉",
+      "AurelionSol": "铸星龙王·奥瑞利安·索尔",
+      "Kayn": "影流之镰·凯隐",
+      "Zoe": "暮光星灵·佐伊",
+      "Zyra": "荆棘之兴·婕拉",
+      "Kaisa": "虚空之女·卡莎",
+      "Seraphine": "星籁歌姬·萨勒芬妮",
+      "Gnar": "迷失之牙·纳尔",
+      "Zac": "生化魔人·扎克",
+      "Yasuo": "疾风剑豪·亚索",
+      "Velkoz": "虚空之眼·维克兹",
+      "Taliyah": "岩雀·塔莉垭",
+      "Camille": "青钢影·卡蜜尔",
+      "Akshan": "影哨·阿克尚",
+      "Belveth": "虚空女皇·卑尔维斯",
+      "Braum": "弗雷尔卓德之心·布隆",
+      "Jhin": "戏命师·烬",
+      "Kindred": "永猎双子·千珏",
+      "Zeri": "祖安花火·泽丽",
+      "Jinx": "暴走萝莉·金克丝",
+      "TahmKench": "河流之王·塔姆",
+      "Briar": "狂厄蔷薇·贝蕾亚",
+      "Viego": "破败之王·佛耶戈",
+      "Senna": "涤魂圣枪·赛娜",
+      "Lucian": "圣枪游侠·卢锡安",
+      "Zed": "影流之主·劫",
+      "Kled": "暴怒骑士·克烈",
+      "Ekko": "时间刺客·艾克",
+      "Qiyana": "元素女皇·奇亚娜",
+      "Vi": "皮城执法官·蔚",
+      "Aatrox": "暗裔剑魔·亚托克斯",
+      "Nami": "唤潮鲛姬·娜美",
+      "Azir": "沙漠皇帝·阿兹尔",
+      "Yuumi": "魔法猫咪·悠米",
+      "Samira": "沙漠玫瑰·莎弥拉",
+      "Thresh": "魂锁典狱长·锤石",
+      "Illaoi": "海兽祭司·俄洛伊",
+      "RekSai": "虚空遁地兽·雷克塞",
+      "Ivern": "翠神·艾翁",
+      "Kalista": "复仇之矛·卡莉丝塔",
+      "Bard": "星界游神·巴德",
+      "Rakan": "幻翎·洛",
+      "Xayah": "逆羽·霞",
+      "Ornn": "山隐之焰·奥恩",
+      "Sylas": "解脱者·塞拉斯",
+      "Neeko": "万花通灵·妮蔻",
+      "Aphelios": "残月之肃·厄斐琉斯",
+      "Rell": "镕铁少女·芮尔",
+      "Pyke": "血港鬼影·派克",
+      "Vex": "愁云使者·薇古丝",
+      "Yone": "封魔剑魂·永恩",
+      "Ambessa": "铁血狼母·安蓓萨",
+      "Mel": "流光镜影·梅尔",
+      "Yunara": "不破之誓·芸阿娜",
+      "Sett": "腕豪·瑟提",
+      "Lillia": "含羞蓓蕾·莉莉娅",
+      "Gwen": "灵罗娃娃·格温",
+      "Renata": "炼金男爵·烈娜塔 · 戈拉斯克",
+      "Aurora": "双界灵兔·阿萝拉",
+      "Nilah": "不羁之悦·尼菈",
+      "KSante": "纳祖芒荣耀·奎桑提",
+      "Smolder": "炽炎雏龙·斯莫德",
+      "Milio": "明烛·米利欧",
+      "Zaahen": "不落魔锋·亚恒",
+      "Hwei": "异画师·彗",
+      "Naafiri": "百裂冥犬·纳亚菲利"
+    };
+
+    const titleToId = Object.fromEntries(Object.entries(championTitles).map(([id, title]) => [title, id]));
+
+    function buildHeroPoolsFromList(listText) {
+      const result = Object.fromEntries(heroLanes.map(lane => [lane.key, []]));
+
+      listText.split(/\n+/).map(line => line.trim()).filter(Boolean).forEach(line => {
+        const parts = line.split(/[：:]/);
+        if (parts.length < 2) return;
+
+        const id = titleToId[parts[0].trim()];
+        if (!id) return;
+
+        parts.slice(1).join("：").split(/[，,、/\s]+/).map(x => x.trim()).filter(Boolean).forEach(laneName => {
+          const key = laneNameToKey[laneName];
+          if (key && !result[key].includes(id)) result[key].push(id);
+        });
+      });
+
+      return result;
+    }
+
+    const heroPools = buildHeroPoolsFromList($("heroLaneConfig").textContent.trim());
+    const allHeroIds = Array.from(new Set(Object.values(heroPools).flat()));
+
+    function getHeroTitle(id) {
+      return championTitles[id] || "未收录英雄";
+    }
+
+    function splitChampionDisplay(id) {
+      const label = getHeroTitle(id);
+      if (label.includes("·")) {
+        const [heroTitle, heroName] = label.split("·", 2);
+        return { heroTitle, heroName };
+      }
+      return { heroTitle: label, heroName: label };
+    }
+
+    function iconUrl(id) {
+      return `https://game.gtimg.cn/images/lol/act/img/champion/${id}.png`;
+    }
+
+    function fallbackIconUrl(id) {
+      return `https://ddragon.leagueoflegends.com/cdn/${VERSION}/img/champion/${id}.png`;
+    }
+
+    function secondFallbackIconUrl(id) {
+      return `https://ddragon.leagueoflegends.com/cdn/${FALLBACK_VERSION}/img/champion/${id}.png`;
     }
 
     function escapeHtml(text) {
@@ -254,14 +712,21 @@
     }
 
     function laneByIndex(index) {
-      const lane = lanes[index % lanes.length];
-      const round = Math.floor(index / lanes.length);
+      const lane = playerLanes[index % playerLanes.length];
+      const round = Math.floor(index / playerLanes.length);
       return round === 0 ? lane : `${lane}${round + 1}`;
     }
 
     function assignTeamLanes(teamNames) {
       const laneOrder = shuffle(Array.from({ length: teamNames.length }, (_, i) => laneByIndex(i)));
       return teamNames.map((name, i) => ({ name, lane: laneOrder[i] }));
+    }
+
+    function pickUnique(pool, count, used) {
+      const available = shuffle(pool.filter(id => !used.has(id)));
+      const picked = available.slice(0, count);
+      picked.forEach(id => used.add(id));
+      return picked;
     }
 
     function calcTeamPower(teamNames) {
@@ -442,6 +907,58 @@
       $("blueMeta").textContent = `Blue Side · 总战力 ${best.bluePower}`;
       $("redMeta").textContent = `Red Side · 总战力 ${best.redPower}`;
       setBalanceHint(best.diff);
+
+      setHelper("分组完成，可在下方独立随机英雄池");
+    }
+
+    function heroCard(id) {
+      const { heroTitle, heroName } = splitChampionDisplay(id);
+      return `
+        <div class="flex items-center gap-3 rounded-2xl bg-slate-950/65 border border-white/10 p-2.5 overflow-hidden">
+          <div class="relative shrink-0">
+            <img src="${iconUrl(id)}" alt="${escapeHtml(heroName)}" class="w-14 h-14 rounded-2xl object-cover border border-amber-200/20 shadow-lg shadow-black/30" loading="lazy" onerror="if (!this.dataset.fallback) { this.dataset.fallback='1'; this.src='${fallbackIconUrl(id)}'; } else { this.onerror=null; this.src='${secondFallbackIconUrl(id)}'; }" />
+          </div>
+          <div class="min-w-0 flex-1">
+            <div class="font-black text-sm md:text-base truncate text-slate-50">${escapeHtml(heroTitle)}</div>
+            <div class="text-xs text-slate-300/85 truncate">${escapeHtml(heroName)}</div>
+          </div>
+        </div>`;
+    }
+
+    function heroLaneBlock(lane, picks) {
+      return `
+        <div class="rounded-3xl border border-white/10 bg-slate-950/40 overflow-hidden">
+          <div class="px-4 py-3 border-b border-white/10 flex items-center justify-between bg-white/[0.03]">
+            <h3 class="flex items-center gap-2 font-black text-lg">${lane.name}</h3>
+            <span class="rounded-full border border-amber-300/20 bg-amber-300/10 px-3 py-1 text-xs text-amber-100">${lane.icon} · ${picks.length} 个</span>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3 p-3">${picks.map(heroCard).join("")}</div>
+        </div>`;
+    }
+
+    function randomizeHeroes() {
+      const n = Math.max(1, Math.min(5, Number($("heroCount").value) || 3));
+      $("heroCount").value = n;
+
+      const used = new Set();
+      const blue = {};
+      const red = {};
+
+      for (const lane of heroLanes) blue[lane.key] = pickUnique(heroPools[lane.key], n, used);
+      for (const lane of heroLanes) red[lane.key] = pickUnique(heroPools[lane.key], n, used);
+
+      $("blueHeroTeam").innerHTML = heroLanes.map(lane => heroLaneBlock(lane, blue[lane.key])).join("");
+      $("redHeroTeam").innerHTML = heroLanes.map(lane => heroLaneBlock(lane, red[lane.key])).join("");
+    }
+
+    function clearHeroResults() {
+      $("blueHeroTeam").innerHTML = '<div class="rounded-3xl border border-dashed border-blue-200/20 bg-blue-950/20 text-blue-100/60 text-center py-16">点击“开始随机英雄”生成蓝色方英雄池</div>';
+      $("redHeroTeam").innerHTML = '<div class="rounded-3xl border border-dashed border-red-200/20 bg-red-950/20 text-red-100/60 text-center py-16">点击“开始随机英雄”生成红色方英雄池</div>';
+    }
+
+    function clampHeroCount(delta) {
+      const input = $("heroCount");
+      input.value = Math.max(1, Math.min(5, (Number(input.value) || 3) + delta));
     }
 
     function clearResults() {
@@ -539,10 +1056,15 @@
 
     $("addSelectedBtn").addEventListener("click", addSelectedPlayers);
     $("clearSelectedBtn").addEventListener("click", clearSelectedPlayers);
+    $("heroRandomBtn").addEventListener("click", randomizeHeroes);
+    $("heroClearBtn").addEventListener("click", clearHeroResults);
+    $("heroMinusBtn").addEventListener("click", () => clampHeroCount(-1));
+    $("heroPlusBtn").addEventListener("click", () => clampHeroCount(1));
 
     renderPresetPool();
     fillCaptainOptions();
     clearResults();
+    clearHeroResults();
   </script>
 </body>
 </html>
